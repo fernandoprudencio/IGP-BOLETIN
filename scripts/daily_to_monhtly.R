@@ -93,20 +93,20 @@ df <- tibble(date = ts) %>% mutate(id = 1:n())
 #' BUILD FUNCTION TO CALCULATE MONTHLY DATA
 mnth.date <- str_sub(ts, 1, 7) %>% unique()
 
-dly_to_mnthly <- function(doy, input) {
+dly_to_mnthly <- function(doy, data, output) {
   bands <- df %>% filter(str_sub(date, 1, 7) == doy)
-  stack(lst.img[bands$id]) %>%
+  stack(data[bands$id]) %>%
     "*"(1) %>%
     max(na.rm = T) %>%
     writeRaster(
       sprintf(
         "%1$sMOD09A1.006_sur_GVMI_doy%2$s%3$s.tif",
-        input, str_sub(doy, 1, 4), str_sub(doy, 6, 7)
+        output, str_sub(doy, 1, 4), str_sub(doy, 6, 7)
       ),
       overwrite = T, datatype = "FLT4S"
     )
 }
 
 #' APPLY FUNCTION TO CALCULATE MONTHLY DATA
-input <- "data/raster/monthly/"
-sapply(mnth.date, FUN = dly_to_mnthly, input)
+output <- "data/raster/monthly/"
+sapply(mnth.date, FUN = dly_to_mnthly, lst.img, output)
